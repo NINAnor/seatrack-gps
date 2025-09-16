@@ -1,0 +1,4 @@
+/test_data
+*log*.txt
+/*.xlsx
+.Rproj.user
