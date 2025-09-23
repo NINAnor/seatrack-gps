@@ -8,6 +8,13 @@
 \description{
 Implements functions to assist reading and organising GPS data within the seatrack project.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://jevansbio.github.io/seatrackgps/}
+}
+
+}
 \author{
 \strong{Maintainer}: Julian Evans \email{julian.evans@nina.no}
 

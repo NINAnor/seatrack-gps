@@ -215,6 +215,7 @@ read_acc_data <- function(tag_id, file_connection, immersion = TRUE, sep = " ", 
 #' @param sep The separator used in the data file (default is comma).
 #' @param dec The decimal point character used in the data file (default is period).
 #' @return A data frame containing the position data with a POSIXct date_time column
+#' @export
 load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL, sep = ",", dec = ".") {
     pos_data_file <- tag_files[grep(".pos", tag_files, fixed = TRUE)]
     if (length(pos_data_file) == 0) {
