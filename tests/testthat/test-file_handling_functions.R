@@ -6,7 +6,7 @@ mock_tag_id <- "61029"
 
 # Create mock data for testing
 setup_mock_data <- function() {
-  tag_path <- file.path(mock_folder, paste0("Tag",mock_tag_id))
+  tag_path <- file.path(mock_folder, paste0("Tag", mock_tag_id))
   dir.create(tag_path, showWarnings = FALSE, recursive = TRUE)
 
   # Create mock acceleration data (AccWetDry.txt)
@@ -169,7 +169,7 @@ test_that("load_tag_acc_data loads acceleration data", {
 
 test_that("load_tag_acc_data returns NULL if AccWetDry.txt missing when immersion=TRUE", {
   setup_mock_data()
-  file.remove(file.path(mock_folder, paste0("Tag",mock_tag_id), "Tag61029AccWetDry.txt"))
+  file.remove(file.path(mock_folder, paste0("Tag", mock_tag_id), "Tag61029AccWetDry.txt"))
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   result <- load_tag_acc_data(mock_tag_id, tag_files, immersion = TRUE)
   expect_true(is.null(result))
@@ -178,12 +178,33 @@ test_that("load_tag_acc_data returns NULL if AccWetDry.txt missing when immersio
 
 test_that("load_tag_acc_data returns NULL if Accel.txt missing when immersion=FALSE", {
   setup_mock_data()
-  file.remove(file.path(mock_folder, paste0("Tag",mock_tag_id), "Tag61029Accel.txt"))
+  file.remove(file.path(mock_folder, paste0("Tag", mock_tag_id), "Tag61029Accel.txt"))
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   result <- load_tag_acc_data(mock_tag_id, tag_files, immersion = FALSE)
   expect_true(is.null(result))
   teardown_mock_data()
 })
+
+test_that("load_tag_acc_data loads acceleration data from multiple files", {
+  setup_mock_data()
+  file.copy(file.path(mock_folder, paste0("Tag", mock_tag_id), "Tag61029Accel.txt"),
+    file.path(mock_folder, paste0("Tag", mock_tag_id), "AnotherTag61029Accel.txt"))
+  tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
+  result <- load_tag_acc_data(mock_tag_id, tag_files, immersion = TRUE)
+  expect_s3_class(result, "data.frame")
+  teardown_mock_data()
+})
+
+test_that("load_tag_acc_data loads acceleration data from multiple files when immersion=FALSE", {
+  setup_mock_data()
+  file.copy(file.path(mock_folder, paste0("Tag", mock_tag_id), "Tag61029Accel.txt"),
+    file.path(mock_folder, paste0("Tag", mock_tag_id), "AnotherTag61029Accel.txt"))
+  tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
+  result <- load_tag_acc_data(mock_tag_id, tag_files, immersion = FALSE)
+  expect_s3_class(result, "data.frame")
+  teardown_mock_data()
+})
+
 
 # -------------------------------
 # Tests for load_tag_pos_data
@@ -198,10 +219,20 @@ test_that("load_tag_pos_data loads position data", {
 
 test_that("load_tag_pos_data returns NULL if pos file is missing", {
   setup_mock_data()
-  file.remove(file.path(mock_folder, paste0("Tag",mock_tag_id), "Tag61029.pos"))
+  file.remove(file.path(mock_folder, paste0("Tag", mock_tag_id), "Tag61029.pos"))
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   result <- load_tag_pos_data(mock_tag_id, tag_files)
   expect_true(is.null(result))
+  teardown_mock_data()
+})
+
+test_that("load_tag_pos_data loads position data from mutliple files", {
+  setup_mock_data()
+  file.copy(file.path(mock_folder, paste0("Tag", mock_tag_id), "Tag61029.pos"),
+    file.path(mock_folder, paste0("Tag", mock_tag_id), "AnotherTag61029.pos"))
+  tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
+  result <- load_tag_pos_data(mock_tag_id, tag_files)
+  expect_s3_class(result, "data.frame")
   teardown_mock_data()
 })
 

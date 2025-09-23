@@ -33,7 +33,6 @@ open_gps_data_files <- function(root_dir) {
 
 
     archives <- all_files[grepl("\\.(zip|7z)$", all_files)]
-    print(archives)
     if (length(archives) == 0) {
         archive_data <- list()
     } else {
@@ -73,18 +72,15 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
     } else {
         stop("Either folder_path or archive_path must be provided.")
     }
-    print(all_tag_files)
     tags_only <- sub(".*Tag([^\\.Acc]+)(?:\\.|Acc).*", "\\1", all_tag_files)
-    
+    tags_only <- gsub("MERGED", "", tags_only)
     tags <- unique(tags_only)
-    
 
     if (length(tags) == 0) {
         return(list())
     }
     # Loop through each tag and load data
     all_tag_data <- lapply(tags, function(tag_id) {
-        print(tag_id)
         # Get tag files
         if (!is.null(archive_path)) {
             tag_file_paths <- get_tag_files(tag_id, file_paths = archive_files$path)
@@ -135,9 +131,8 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
 #' get_tag_files("61029", "path/to/directory")
 #' @export
 get_tag_files <- function(tag_id, target_file_path = NULL, file_paths = NULL) {
-    
     if (!is.null(target_file_path)) {
-        tag_files <- list.files(target_file_path, pattern = paste0("Tag", tag_id), full.names = TRUE,recursive = TRUE)
+        tag_files <- list.files(target_file_path, pattern = paste0("Tag", tag_id), full.names = TRUE, recursive = TRUE)
     } else if (!is.null(file_paths)) {
         tag_files <- file_paths[grep(paste0("Tag", tag_id), file_paths, fixed = TRUE)]
     } else {
@@ -165,25 +160,34 @@ load_tag_acc_data <- function(
     tag_id, tag_files, archive_path = NULL,
     immersion = TRUE, sep = " ", dec = ",") {
     if (immersion) {
-        acc_data_file <- tag_files[grep("AccWetDry.txt", tag_files)]
+        all_acc_data_files <- tag_files[grep("AccWetDry.txt", tag_files)]
     } else {
-        acc_data_file <- tag_files[grep("Accel.txt", tag_files)]
+        all_acc_data_files <- tag_files[grep("Accel.txt", tag_files)]
     }
 
-    if (length(acc_data_file) == 0) {
+    if (length(all_acc_data_files) == 0) {
         warning(paste("No acceleration data file found for tag", tag_id))
         return(NULL)
     }
 
-    if (is.null(archive_path)) {
-        file_conn <- file(acc_data_file, open = "r")
-    } else if (!is.null(archive_path)) {
-        file_conn <- archive_read(archive_path, acc_data_file)
-    }
+    acc_data <- data.frame()
 
-    acc_data <- read_acc_data(tag_id, file_conn, immersion = immersion, sep = sep, dec = dec)
-    if (is.null(archive_path)) {
-        close(file_conn)
+    for (acc_data_file in all_acc_data_files) {
+        if (is.null(archive_path)) {
+            file_conn <- file(acc_data_file, open = "r")
+        } else if (!is.null(archive_path)) {
+            file_conn <- archive_read(archive_path, acc_data_file)
+        }
+
+        new_acc_data <- read_acc_data(tag_id, file_conn, immersion = immersion, sep = sep, dec = dec)
+        acc_data <- rbind(new_acc_data)
+
+        if (is.null(archive_path)) {
+            close(file_conn)
+        }
+    }
+    if (nrow(acc_data) > 0){
+        acc_data <- acc_data[!duplicated(acc_data$date_time), ]
     }
     return(acc_data)
 }
@@ -223,20 +227,28 @@ read_acc_data <- function(tag_id, file_connection, immersion = TRUE, sep = " ", 
 #' @return A data frame containing the position data with a POSIXct date_time column
 #' @export
 load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL, sep = ",", dec = ".") {
-    pos_data_file <- tag_files[grep(".pos", tag_files, fixed = TRUE)]
-    if (length(pos_data_file) == 0) {
+    all_pos_data_files <- tag_files[grep(".pos", tag_files, fixed = TRUE)]
+    if (length(all_pos_data_files) == 0) {
         warning(paste("No position data file found for tag", tag_id))
         return(NULL)
     }
-    if (is.null(archive_path)) {
-        file_conn <- file(pos_data_file, open = "r")
-    } else if (!is.null(archive_path)) {
-        file_conn <- archive_read(archive_path, pos_data_file)
-    }
+    pos_data <- data.frame()
 
-    pos_data <- read_pos_data(tag_id, file_conn, sep = sep, dec = dec)
-    if (is.null(archive_path)) {
-        close(file_conn)
+    for (pos_data_file in all_pos_data_files) {
+        if (is.null(archive_path)) {
+            file_conn <- file(pos_data_file, open = "r")
+        } else if (!is.null(archive_path)) {
+            file_conn <- archive_read(archive_path, pos_data_file)
+        }
+
+        new_pos_data <- read_pos_data(tag_id, file_conn, sep = sep, dec = dec)
+        pos_data <- rbind(new_pos_data)
+        if (is.null(archive_path)) {
+            close(file_conn)
+        }
+    }
+    if (nrow(pos_data) > 0){
+        pos_data <- pos_data[!duplicated(pos_data$date_time), ]
     }
     return(pos_data)
 }
