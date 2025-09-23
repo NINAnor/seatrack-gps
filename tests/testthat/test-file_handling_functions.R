@@ -1,3 +1,4 @@
+library(archive)
 # Mock data and helper functions
 mock_folder <- "mock_data"
 mock_archive <- "mock_data.zip"
@@ -5,7 +6,8 @@ mock_tag_id <- "61029"
 
 # Create mock data for testing
 setup_mock_data <- function() {
-  dir.create(mock_folder, showWarnings = FALSE)
+  tag_path <- file.path(mock_folder, paste0("Tag",mock_tag_id))
+  dir.create(tag_path, showWarnings = FALSE, recursive = TRUE)
 
   # Create mock acceleration data (AccWetDry.txt)
   acc_wetdry_data <- c(
@@ -18,7 +20,7 @@ setup_mock_data <- function() {
     "2024 6 14 18 1 16,00 -0,0625 -0,7344 -0,7031 1,0186 0",
     "2024 6 14 18 2 16,00 -0,0938 -0,7344 -0,6875 1,0103 0"
   )
-  writeLines(acc_wetdry_data, file.path(mock_folder, "Tag61029AccWetDry.txt"))
+  writeLines(acc_wetdry_data, file.path(tag_path, "Tag61029AccWetDry.txt"))
 
   # Create mock acceleration data (Accel.txt)
   accel_data <- c(
@@ -31,7 +33,7 @@ setup_mock_data <- function() {
     "2024 6 14 18 0 16,08 -0,0625 -0,7188 -0,7031 1,0074",
     "2024 6 14 18 0 16,12 -0,0625 -0,7344 -0,7031 1,0186"
   )
-  writeLines(accel_data, file.path(mock_folder, "Tag61029Accel.txt"))
+  writeLines(accel_data, file.path(tag_path, "Tag61029Accel.txt"))
 
   # Create mock position data (pos)
   pos_data <- c(
@@ -44,12 +46,24 @@ setup_mock_data <- function() {
     "15,06,24,16,01,27,57687.400,0,0.000000,0.000000,0.00,9999.999,9999.999000000000,4.14",
     "16,06,24,14,02,29,50549.700,4,62.407327,5.596378,100.00,9999.999,0.000000767634,4.14"
   )
-  writeLines(pos_data, file.path(mock_folder, "Tag61029.pos"))
+  writeLines(pos_data, file.path(tag_path, "Tag61029.pos"))
 }
 
 teardown_mock_data <- function() {
   unlink(mock_folder, recursive = TRUE)
 }
+
+setup_mock_archive <- function() {
+  setup_mock_data()
+  # Create zip archive with mock tag files using archive package
+  archive::archive_write_dir(mock_archive, mock_folder, recursive = TRUE)
+}
+
+teardown_mock_archive <- function() {
+  unlink(mock_archive)
+}
+
+
 
 # -------------------------------
 # Tests for open_gps_data_files
@@ -70,6 +84,15 @@ test_that("open_gps_data_files returns empty list for empty folder", {
   teardown_mock_data()
 })
 
+test_that("open_gps_data_files finds compatible files in archive", {
+  setup_mock_archive()
+  teardown_mock_data()
+  result <- open_gps_data_files(dirname(mock_archive))
+  expect_type(result, "list")
+  expect_length(result, 1)
+  teardown_mock_archive()
+})
+
 # -------------------------------
 # Tests for load_all_gps_data
 # -------------------------------
@@ -87,6 +110,30 @@ test_that("load_all_gps_data returns empty list for folder with no compatible fi
   result <- load_all_gps_data(folder_path = mock_folder)
   expect_type(result, "list")
   expect_length(result, 0)
+  teardown_mock_data()
+})
+
+# -------------------------------
+# Tests for load_all_gps_data (archive)
+# -------------------------------
+test_that("load_all_gps_data loads data from a zip archive", {
+  setup_mock_archive()
+  result <- load_all_gps_data(archive_path = mock_archive)
+  expect_type(result, "list")
+  expect_named(result, mock_tag_id)
+  teardown_mock_archive()
+  teardown_mock_data()
+})
+
+test_that("load_all_gps_data returns empty list for archive with no compatible files", {
+  # Create empty folder and zip it using archive package
+  dir.create(mock_folder, showWarnings = FALSE)
+  file.create(file.path(mock_folder, "random.txt"))
+  archive::archive_write_files(mock_archive, file.path(mock_folder, "random.txt"))
+  result <- load_all_gps_data(archive_path = mock_archive)
+  expect_type(result, "list")
+  expect_length(result, 0)
+  teardown_mock_archive()
   teardown_mock_data()
 })
 
@@ -122,7 +169,7 @@ test_that("load_tag_acc_data loads acceleration data", {
 
 test_that("load_tag_acc_data returns NULL if AccWetDry.txt missing when immersion=TRUE", {
   setup_mock_data()
-  file.remove(file.path(mock_folder, "Tag61029AccWetDry.txt"))
+  file.remove(file.path(mock_folder, paste0("Tag",mock_tag_id), "Tag61029AccWetDry.txt"))
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   result <- load_tag_acc_data(mock_tag_id, tag_files, immersion = TRUE)
   expect_true(is.null(result))
@@ -131,7 +178,7 @@ test_that("load_tag_acc_data returns NULL if AccWetDry.txt missing when immersio
 
 test_that("load_tag_acc_data returns NULL if Accel.txt missing when immersion=FALSE", {
   setup_mock_data()
-  file.remove(file.path(mock_folder, "Tag61029Accel.txt"))
+  file.remove(file.path(mock_folder, paste0("Tag",mock_tag_id), "Tag61029Accel.txt"))
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   result <- load_tag_acc_data(mock_tag_id, tag_files, immersion = FALSE)
   expect_true(is.null(result))
@@ -151,7 +198,7 @@ test_that("load_tag_pos_data loads position data", {
 
 test_that("load_tag_pos_data returns NULL if pos file is missing", {
   setup_mock_data()
-  file.remove(file.path(mock_folder, "Tag61029.pos"))
+  file.remove(file.path(mock_folder, paste0("Tag",mock_tag_id), "Tag61029.pos"))
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   result <- load_tag_pos_data(mock_tag_id, tag_files)
   expect_true(is.null(result))
@@ -166,7 +213,6 @@ test_that("get_diagnostics computes diagnostics from position data", {
   tag_files <- get_tag_files(mock_tag_id, target_file_path = mock_folder)
   pos_data <- load_tag_pos_data(mock_tag_id, tag_files)
   result <- get_diagnostics(pos_data)
-  print(str(result))
   expect_s3_class(result, "data.frame")
   expect_named(result, c("tag_id", "start_date", "end_date",
                         "n_positions", "deployment_length_days", "n_no_lat_lon",

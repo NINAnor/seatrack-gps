@@ -33,6 +33,7 @@ open_gps_data_files <- function(root_dir) {
 
 
     archives <- all_files[grepl("\\.(zip|7z)$", all_files)]
+    print(archives)
     if (length(archives) == 0) {
         archive_data <- list()
     } else {
@@ -65,21 +66,25 @@ open_gps_data_files <- function(root_dir) {
 load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
     # Get all tags
     if (!is.null(folder_path)) {
-        all_tag_files <- list.files(folder_path, pattern = "Tag")
-        tags_only <- regmatches(all_tag_files, regexpr("(?<=Tag)[^\\.Acc]+", all_tag_files, perl = TRUE))
-        tags <- unique(tags_only)
+        all_tag_files <- list.files(folder_path, pattern = "Tag", recursive = TRUE)
     } else if (!is.null(archive_path)) {
         archive_files <- archive(archive_path)
-        archive_folders <- archive_files[archive_files$size == 0 & grepl("/$", archive_files$path), ]
-        tags <- gsub("Tag|/", "", archive_folders$path)
+        all_tag_files <- all_tag_files[grepl("Tag", archive_files$path)]
     } else {
         stop("Either folder_path or archive_path must be provided.")
     }
+    print(all_tag_files)
+    tags_only <- sub(".*Tag([^\\.Acc]+)(?:\\.|Acc).*", "\\1", all_tag_files)
+    
+    tags <- unique(tags_only)
+    
+
     if (length(tags) == 0) {
         return(list())
     }
     # Loop through each tag and load data
     all_tag_data <- lapply(tags, function(tag_id) {
+        print(tag_id)
         # Get tag files
         if (!is.null(archive_path)) {
             tag_file_paths <- get_tag_files(tag_id, file_paths = archive_files$path)
@@ -90,7 +95,7 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
         # If no files found, return NULL
         if (length(tag_file_paths) == 0) {
             warning(paste("No files found for tag", tag_id))
-            return(NULL)
+            return(list())
         }
 
         # Load acceleration data
@@ -130,8 +135,9 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
 #' get_tag_files("61029", "path/to/directory")
 #' @export
 get_tag_files <- function(tag_id, target_file_path = NULL, file_paths = NULL) {
+    
     if (!is.null(target_file_path)) {
-        tag_files <- list.files(target_file_path, pattern = paste0("Tag", tag_id), full.names = TRUE)
+        tag_files <- list.files(target_file_path, pattern = paste0("Tag", tag_id), full.names = TRUE,recursive = TRUE)
     } else if (!is.null(file_paths)) {
         tag_files <- file_paths[grep(paste0("Tag", tag_id), file_paths, fixed = TRUE)]
     } else {
