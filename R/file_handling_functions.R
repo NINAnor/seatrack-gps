@@ -69,7 +69,7 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
         all_tag_files <- list.files(folder_path, pattern = "Tag", recursive = TRUE)
     } else if (!is.null(archive_path)) {
         archive_files <- archive(archive_path)
-        all_tag_files <- all_tag_files[grepl("Tag", archive_files$path)]
+        all_tag_files <- archive_files$path[grepl("Tag", archive_files$path)]
     } else {
         stop("Either folder_path or archive_path must be provided.")
     }
