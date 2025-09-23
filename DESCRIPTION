@@ -1,0 +1,16 @@
+Package: seatrackgps
+Title: Utility functions for working with GPS within the seatrack project.
+Version: 0.0.0.9000
+Authors@R: 
+    person("Julian", "Evans", , "julian.evans@nina.no", role = c("aut", "cre"))
+Description: Implements functions to assist reading and organising GPS data within the seatrack project.
+License: `use_mit_license()`
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Imports: 
+    archive
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+URL: https://jevansbio.github.io/seatrackgps/
