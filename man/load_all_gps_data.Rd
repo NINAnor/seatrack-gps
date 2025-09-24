@@ -18,6 +18,7 @@ A list of lists, each containing data frames for a specific tag:
 \item acc_data: A data frame containing acceleration data without immersion information.
 \item pos_data: A data frame containing position data.
 \item diag_data: A data frame containing diagnostics information.
+\item root_folders: vector of filepaths from which the data were loaded.
 }
 }
 \description{

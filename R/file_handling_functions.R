@@ -58,6 +58,7 @@ open_gps_data_files <- function(root_dir) {
 #' - acc_data: A data frame containing acceleration data without immersion information.
 #' - pos_data: A data frame containing position data.
 #' - diag_data: A data frame containing diagnostics information.
+#' - root_folders: vector of filepaths from which the data were loaded.
 #' @examples
 #' load_all_data(folder_path = "path/to/directory") # Load data from a folder
 #' load_all_data(archive_path = "path/to/archive.zip") # Load data from an archive
@@ -94,6 +95,8 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
             return(list())
         }
 
+        root_folders <- unique(dirname(tag_file_paths))
+
         # Load acceleration data
         acc_immersion_data <- load_tag_acc_data(tag_id, tag_file_paths, archive_path = archive_path, immersion = TRUE)
         acc_data <- load_tag_acc_data(tag_id, tag_file_paths, archive_path = archive_path, immersion = FALSE)
@@ -109,7 +112,8 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
         acc_immersion_data = acc_immersion_data,
         acc_data = acc_data,
         pos_data = pos_data,
-        diag_data = diag_data))
+        diag_data = diag_data,
+        root_folders = root_folders))
     })
 
     names(all_tag_data) <- tags
