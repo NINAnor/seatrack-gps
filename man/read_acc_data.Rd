@@ -4,7 +4,7 @@
 \alias{read_acc_data}
 \title{Get acceleration data from a file connection}
 \usage{
-read_acc_data(tag_id, file_connection, immersion = TRUE, sep = " ", dec = ",")
+read_acc_data(tag_id, file_connection, immersion = TRUE)
 }
 \arguments{
 \item{tag_id}{The ID of the tag to retrieve acceleration data for.}
@@ -12,10 +12,6 @@ read_acc_data(tag_id, file_connection, immersion = TRUE, sep = " ", dec = ",")
 \item{file_connection}{A connection to the file containing the acceleration data.}
 
 \item{immersion}{Logical indicating whether to read immersion data (default is TRUE).}
-
-\item{sep}{The separator used in the data file (default is space).}
-
-\item{dec}{The decimal point character used in the data file (default is comma).}
 }
 \value{
 A data frame containing the acceleration data with a POSIXct date_time column

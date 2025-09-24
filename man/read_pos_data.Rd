@@ -4,16 +4,12 @@
 \alias{read_pos_data}
 \title{Get position data from a specific tag file}
 \usage{
-read_pos_data(tag_id, file_connection, sep = ",", dec = ".")
+read_pos_data(tag_id, file_connection)
 }
 \arguments{
 \item{tag_id}{The ID of the tag to retrieve position data for.}
 
 \item{file_connection}{FILE CONNECTION}
-
-\item{sep}{The separator used in the data file (default is comma).}
-
-\item{dec}{The decimal point character used in the data file (default is period).}
 }
 \value{
 A data frame containing the position data with a POSIXct date_time column

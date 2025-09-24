@@ -4,14 +4,7 @@
 \alias{load_tag_acc_data}
 \title{Load acceleration data for a specific tag}
 \usage{
-load_tag_acc_data(
-  tag_id,
-  tag_files,
-  archive_path = NULL,
-  immersion = TRUE,
-  sep = " ",
-  dec = ","
-)
+load_tag_acc_data(tag_id, tag_files, archive_path = NULL, immersion = TRUE)
 }
 \arguments{
 \item{tag_id}{The ID of the tag to retrieve acceleration data for.}
@@ -21,10 +14,6 @@ load_tag_acc_data(
 \item{archive_path}{The path to the archive file (if applicable).}
 
 \item{immersion}{Logical indicating whether to read immersion data (default is TRUE).}
-
-\item{sep}{The separator used in the data file (default is space).}
-
-\item{dec}{The decimal point character used in the data file (default is comma).}
 }
 \value{
 A data frame containing the acceleration data with a POSIXct date_time column

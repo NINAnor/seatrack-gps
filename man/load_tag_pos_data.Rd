@@ -4,7 +4,7 @@
 \alias{load_tag_pos_data}
 \title{Load position data for a specific tag}
 \usage{
-load_tag_pos_data(tag_id, tag_files, archive_path = NULL, sep = ",", dec = ".")
+load_tag_pos_data(tag_id, tag_files, archive_path = NULL)
 }
 \arguments{
 \item{tag_id}{The ID of the tag to retrieve position data for.}
@@ -12,10 +12,6 @@ load_tag_pos_data(tag_id, tag_files, archive_path = NULL, sep = ",", dec = ".")
 \item{tag_files}{character vector of file paths associated with the specified tag ID.}
 
 \item{archive_path}{The path to the archive file (if applicable).}
-
-\item{sep}{The separator used in the data file (default is comma).}
-
-\item{dec}{The decimal point character used in the data file (default is period).}
 }
 \value{
 A data frame containing the position data with a POSIXct date_time column

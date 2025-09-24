@@ -153,8 +153,6 @@ get_tag_files <- function(tag_id, target_file_path = NULL, file_paths = NULL) {
 #' @param tag_files character vector of file paths associated with the specified tag ID.
 #' @param archive_path The path to the archive file (if applicable).
 #' @param immersion Logical indicating whether to read immersion data (default is TRUE).
-#' @param sep The separator used in the data file (default is space).
-#' @param dec The decimal point character used in the data file (default is comma).
 #' @return A data frame containing the acceleration data with a POSIXct date_time column
 #' and acceleration measurements.
 #' @examples
@@ -162,7 +160,7 @@ get_tag_files <- function(tag_id, target_file_path = NULL, file_paths = NULL) {
 #' @export
 load_tag_acc_data <- function(
     tag_id, tag_files, archive_path = NULL,
-    immersion = TRUE, sep = " ", dec = ",") {
+    immersion = TRUE) {
     if (immersion) {
         all_acc_data_files <- tag_files[grep("AccWetDry.txt", tag_files)]
     } else {
@@ -183,14 +181,14 @@ load_tag_acc_data <- function(
             file_conn <- archive_read(archive_path, acc_data_file)
         }
 
-        new_acc_data <- read_acc_data(tag_id, file_conn, immersion = immersion, sep = sep, dec = dec)
+        new_acc_data <- read_acc_data(tag_id, file_conn, immersion = immersion)
         acc_data <- rbind(new_acc_data)
 
         if (is.null(archive_path)) {
             close(file_conn)
         }
     }
-    if (nrow(acc_data) > 0){
+    if (nrow(acc_data) > 0) {
         acc_data <- acc_data[!duplicated(acc_data$date_time), ]
     }
     return(acc_data)
@@ -200,15 +198,21 @@ load_tag_acc_data <- function(
 #' @param tag_id The ID of the tag to retrieve acceleration data for.
 #' @param file_connection A connection to the file containing the acceleration data.
 #' @param immersion Logical indicating whether to read immersion data (default is TRUE).
-#' @param sep The separator used in the data file (default is space).
-#' @param dec The decimal point character used in the data file (default is comma).
 #' @return A data frame containing the acceleration data with a POSIXct date_time column
 #' and acceleration measurements.
 #' @examples
 #' get_acc_data("61029", "path/to/directory", immersion = TRUE)
 #' @export
-read_acc_data <- function(tag_id, file_connection, immersion = TRUE, sep = " ", dec = ",") {
-    acc_data <- read.table(file_connection, header = FALSE, skip = 5, sep = sep, dec = dec)
+read_acc_data <- function(tag_id, file_connection, immersion = TRUE) {
+    acc_data <- read.table(file_connection, header = FALSE, skip = 5, sep = " ", dec = ",")
+
+    if (ncol(acc_data) == 1) {
+        if (all(c("file", "connection") %in% class(file_connection))) {
+            seek(file_connection, 0)
+        }
+        acc_data <- read.table(file_connection, header = FALSE, skip = 5, sep = ",", dec = ".")
+    }
+
     time_cols <- c("year", "month", "day", "hour", "minute", "second")
     new_names <- c("x_acceleration", "y_acceleration", "z_acceleration", "acceleration_3d")
     if (immersion) new_names <- c(new_names, "wet")
@@ -226,11 +230,9 @@ read_acc_data <- function(tag_id, file_connection, immersion = TRUE, sep = " ", 
 #' @param tag_id The ID of the tag to retrieve position data for.
 #' @param tag_files character vector of file paths associated with the specified tag ID.
 #' @param archive_path The path to the archive file (if applicable).
-#' @param sep The separator used in the data file (default is comma).
-#' @param dec The decimal point character used in the data file (default is period).
 #' @return A data frame containing the position data with a POSIXct date_time column
 #' @export
-load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL, sep = ",", dec = ".") {
+load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL) {
     all_pos_data_files <- tag_files[grep(".pos", tag_files, fixed = TRUE)]
     if (length(all_pos_data_files) == 0) {
         warning(paste("No position data file found for tag", tag_id))
@@ -245,13 +247,13 @@ load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL, sep = ",",
             file_conn <- archive_read(archive_path, pos_data_file)
         }
 
-        new_pos_data <- read_pos_data(tag_id, file_conn, sep = sep, dec = dec)
+        new_pos_data <- read_pos_data(tag_id, file_conn)
         pos_data <- rbind(new_pos_data)
         if (is.null(archive_path)) {
             close(file_conn)
         }
     }
-    if (nrow(pos_data) > 0){
+    if (nrow(pos_data) > 0) {
         pos_data <- pos_data[!duplicated(pos_data$date_time), ]
     }
     return(pos_data)
@@ -260,15 +262,20 @@ load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL, sep = ",",
 #' Get position data from a specific tag file
 #' @param tag_id The ID of the tag to retrieve position data for.
 #' @param file_connection FILE CONNECTION
-#' @param sep The separator used in the data file (default is comma).
-#' @param dec The decimal point character used in the data file (default is period).
 #' @return A data frame containing the position data with a POSIXct date_time column
 #' and position measurements.
 #' @examples
 #' get_pos_data("61029", "path/to/directory")
 #' @export
-read_pos_data <- function(tag_id, file_connection, sep = ",", dec = ".") {
-    pos_data <- read.table(file_connection, header = FALSE, skip = 5, sep = sep, dec = dec)
+read_pos_data <- function(tag_id, file_connection) {
+    pos_data <- read.table(file_connection, header = FALSE, skip = 5, sep = " ", dec = ",")
+    if (ncol(pos_data) == 1) {
+        if (all(c("file", "connection") %in% class(file_connection))) {
+            seek(file_connection, 0)
+        }
+        pos_data <- read.table(file_connection, header = FALSE, skip = 5, sep = ",", dec = ".")
+    }
+
     time_cols <- c("day", "month", "year", "hour", "minute", "second")
     new_names <- c("day_second", "n_satellites", "latitude", "longitude", "altitude", "clock_offset", "accuracy", "battery")
     names(pos_data) <- c(time_cols, new_names)
