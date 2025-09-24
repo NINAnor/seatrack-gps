@@ -178,7 +178,7 @@ load_tag_acc_data <- function(
         if (is.null(archive_path)) {
             file_conn <- file(acc_data_file, open = "r")
         } else if (!is.null(archive_path)) {
-            file_conn <- archive_read(archive_path, acc_data_file)
+            file_conn <- archive_read(archive_path, acc_data_file, mode = "r")
         }
 
         new_acc_data <- read_acc_data(tag_id, file_conn, immersion = immersion)
@@ -204,13 +204,13 @@ load_tag_acc_data <- function(
 #' get_acc_data("61029", "path/to/directory", immersion = TRUE)
 #' @export
 read_acc_data <- function(tag_id, file_connection, immersion = TRUE) {
-    acc_data <- read.table(file_connection, header = FALSE, skip = 5, sep = " ", dec = ",")
+
+    lines <- readLines(file_connection)
+
+    acc_data <- read.table(text = lines, header = FALSE, skip = 5, sep = " ", dec = ",")
 
     if (ncol(acc_data) == 1) {
-        if (all(c("file", "connection") %in% class(file_connection))) {
-            seek(file_connection, 0)
-        }
-        acc_data <- read.table(file_connection, header = FALSE, skip = 5, sep = ",", dec = ".")
+        acc_data <- read.table(text = lines, header = FALSE, skip = 5, sep = ",", dec = ".")
     }
 
     time_cols <- c("year", "month", "day", "hour", "minute", "second")
@@ -244,7 +244,7 @@ load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL) {
         if (is.null(archive_path)) {
             file_conn <- file(pos_data_file, open = "r")
         } else if (!is.null(archive_path)) {
-            file_conn <- archive_read(archive_path, pos_data_file)
+            file_conn <- archive_read(archive_path, pos_data_file, mode = "r")
         }
 
         new_pos_data <- read_pos_data(tag_id, file_conn)
@@ -268,12 +268,13 @@ load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL) {
 #' get_pos_data("61029", "path/to/directory")
 #' @export
 read_pos_data <- function(tag_id, file_connection) {
-    pos_data <- read.table(file_connection, header = FALSE, skip = 5, sep = " ", dec = ",")
+
+    lines <- readLines(file_connection)
+
+    pos_data <- read.table(text = lines, header = FALSE, skip = 5, sep = " ", dec = ",")
     if (ncol(pos_data) == 1) {
-        if (all(c("file", "connection") %in% class(file_connection))) {
-            seek(file_connection, 0)
-        }
-        pos_data <- read.table(file_connection, header = FALSE, skip = 5, sep = ",", dec = ".")
+
+        pos_data <- read.table(text = lines, header = FALSE, skip = 5, sep = ",", dec = ".")
     }
 
     time_cols <- c("day", "month", "year", "hour", "minute", "second")
