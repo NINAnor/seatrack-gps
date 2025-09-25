@@ -190,7 +190,7 @@ load_tag_acc_data <- function(
     }
     if (nrow(acc_data) > 0) {
         acc_data <- acc_data[!duplicated(acc_data$date_time), ]
-        acc_data <- acc_data[order(acc_data$date_time)]
+        acc_data <- acc_data[order(acc_data$date_time), ]
     }
     return(acc_data)
 }
