@@ -190,6 +190,7 @@ load_tag_acc_data <- function(
     }
     if (nrow(acc_data) > 0) {
         acc_data <- acc_data[!duplicated(acc_data$date_time), ]
+        acc_data <- acc_data[order(acc_data$date_time)]
     }
     return(acc_data)
 }
@@ -255,6 +256,7 @@ load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL) {
     }
     if (nrow(pos_data) > 0) {
         pos_data <- pos_data[!duplicated(pos_data$date_time), ]
+        pos_data <- pos_data[order(pos_data$date_time), ]
     }
     return(pos_data)
 }
