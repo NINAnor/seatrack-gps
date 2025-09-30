@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(seatrackgps)
+library(seatrackRgps)
 
-test_check("seatrackgps")
+test_check("seatrackRgps")

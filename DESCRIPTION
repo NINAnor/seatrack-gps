@@ -1,4 +1,4 @@
-Package: seatrackgps
+Package: seatrackRgps
 Title: Utility functions for working with GPS within the seatrack project.
 Version: 0.0.0.9000
 Authors@R: 
@@ -13,4 +13,4 @@ Imports:
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://jevansbio.github.io/seatrackgps/
+URL: https://ninanor.github.io/seatrack-gps/
