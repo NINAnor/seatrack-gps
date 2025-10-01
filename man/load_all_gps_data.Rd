@@ -28,6 +28,8 @@ and returns a list of data frames for each tag, including acceleration data (wit
 without immersion), position data, and diagnostics.
 }
 \examples{
+\dontrun{
 load_all_data(folder_path = "path/to/directory") # Load data from a folder
 load_all_data(archive_path = "path/to/archive.zip") # Load data from an archive
+}
 }

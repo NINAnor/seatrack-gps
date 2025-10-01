@@ -23,5 +23,7 @@ and acceleration measurements.
 Load acceleration data for a specific tag
 }
 \examples{
+\dontrun{
 load_tag_acc_data("61029", "path/to/archive", immersion = TRUE)
+}
 }

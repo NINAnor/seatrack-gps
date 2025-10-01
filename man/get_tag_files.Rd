@@ -21,5 +21,7 @@ A vector of file paths associated with the specified tag ID.
 Get all files for a specific tag
 }
 \examples{
+\dontrun{
 get_tag_files("61029", "path/to/directory")
+}
 }

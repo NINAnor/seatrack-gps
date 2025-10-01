@@ -20,5 +20,7 @@ number of positions, and statistics on satellite counts and accuracy. If an empt
 Get diagnostics from position data
 }
 \examples{
+\dontrun{
 get_diagnostics(pos_data)
+}
 }

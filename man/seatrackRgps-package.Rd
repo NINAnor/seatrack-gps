@@ -4,7 +4,7 @@
 \name{seatrackRgps-package}
 \alias{seatrackRgps}
 \alias{seatrackRgps-package}
-\title{seatrackRgps: Utility functions for working with GPS within the seatrack project.}
+\title{seatrackRgps: Utility functions for working with GPS within the seatrack project}
 \description{
 Implements functions to assist reading and organising GPS data within the seatrack project.
 }

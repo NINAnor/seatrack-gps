@@ -11,7 +11,9 @@
 #' - pos_data: A data frame containing position data.
 #' - diag_data: A data frame containing diagnostics information.
 #' @examples
+#' \dontrun{
 #' open_gps_data_files("path/to/root_directory")
+#' }
 #' @export
 open_gps_data_files <- function(root_dir) {
     # Loose files
@@ -61,8 +63,10 @@ open_gps_data_files <- function(root_dir) {
 #' - root_folders: vector of filepaths from which tag data were loaded.
 #' - base_path: folder_path or archive_path which was used to load files.
 #' @examples
+#' \dontrun{
 #' load_all_data(folder_path = "path/to/directory") # Load data from a folder
 #' load_all_data(archive_path = "path/to/archive.zip") # Load data from an archive
+#' }
 #' @export
 load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
     # Get all tags
@@ -145,7 +149,9 @@ load_all_gps_data <- function(folder_path = NULL, archive_path = NULL) {
 #' @param file_paths A vector of file names to search for the specified tag ID.
 #' @return A vector of file paths associated with the specified tag ID.
 #' @examples
+#' \dontrun{
 #' get_tag_files("61029", "path/to/directory")
+#' }
 #' @export
 get_tag_files <- function(tag_id, target_file_path = NULL, file_paths = NULL) {
     if (!is.null(target_file_path)) {
@@ -169,7 +175,9 @@ get_tag_files <- function(tag_id, target_file_path = NULL, file_paths = NULL) {
 #' @return A data frame containing the acceleration data with a POSIXct date_time column
 #' and acceleration measurements.
 #' @examples
+#' \dontrun{
 #' load_tag_acc_data("61029", "path/to/archive", immersion = TRUE)
+#' }
 #' @export
 load_tag_acc_data <- function(
     tag_id, tag_files, archive_path = NULL,
@@ -215,7 +223,9 @@ load_tag_acc_data <- function(
 #' @return A data frame containing the acceleration data with a POSIXct date_time column
 #' and acceleration measurements.
 #' @examples
+#' \dontrun{
 #' get_acc_data("61029", "path/to/directory", immersion = TRUE)
+#' }
 #' @export
 read_acc_data <- function(tag_id, file_connection, immersion = TRUE) {
 
@@ -280,7 +290,9 @@ load_tag_pos_data <- function(tag_id, tag_files, archive_path = NULL) {
 #' @return A data frame containing the position data with a POSIXct date_time column
 #' and position measurements.
 #' @examples
+#' \dontrun{
 #' get_pos_data("61029", "path/to/directory")
+#' }
 #' @export
 read_pos_data <- function(tag_id, file_connection) {
 
@@ -308,7 +320,9 @@ read_pos_data <- function(tag_id, file_connection) {
 #' @return A data frame containing diagnostics information such as deployment length,
 #' number of positions, and statistics on satellite counts and accuracy. If an empty dataframe is provided, this will largely be NA.
 #' @examples
+#' \dontrun{
 #' get_diagnostics(pos_data)
+#' }
 #' @export
 get_diagnostics <- function(pos_data, acc_data = NULL) {
 

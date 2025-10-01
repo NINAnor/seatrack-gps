@@ -24,5 +24,7 @@ for GPS data files that match the expected naming patterns. It can handle both l
 files and files contained within archive formats such as .zip and .7z.
 }
 \examples{
+\dontrun{
 open_gps_data_files("path/to/root_directory")
+}
 }

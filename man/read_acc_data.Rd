@@ -21,5 +21,7 @@ and acceleration measurements.
 Get acceleration data from a file connection
 }
 \examples{
+\dontrun{
 get_acc_data("61029", "path/to/directory", immersion = TRUE)
+}
 }

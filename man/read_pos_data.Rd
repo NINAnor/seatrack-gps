@@ -19,5 +19,7 @@ and position measurements.
 Get position data from a specific tag file
 }
 \examples{
+\dontrun{
 get_pos_data("61029", "path/to/directory")
+}
 }
