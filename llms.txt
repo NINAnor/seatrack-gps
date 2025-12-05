@@ -1,0 +1,25 @@
+WIP functions for handling GPS data as part of the SEATRACK project.
+
+Documentation at <https://ninanor.github.io/seatrack-gps/>
+
+# Package index
+
+## All functions
+
+- [`get_diagnostics()`](https://ninanor.github.io/seatrack-gps/reference/get_diagnostics.md)
+  : Get diagnostics from position data
+- [`get_tag_files()`](https://ninanor.github.io/seatrack-gps/reference/get_tag_files.md)
+  : Get all files for a specific tag
+- [`load_all_gps_data()`](https://ninanor.github.io/seatrack-gps/reference/load_all_gps_data.md)
+  : Read all data from an archive or folder
+- [`load_tag_acc_data()`](https://ninanor.github.io/seatrack-gps/reference/load_tag_acc_data.md)
+  : Load acceleration data for a specific tag
+- [`load_tag_pos_data()`](https://ninanor.github.io/seatrack-gps/reference/load_tag_pos_data.md)
+  : Load position data for a specific tag
+- [`open_gps_data_files()`](https://ninanor.github.io/seatrack-gps/reference/open_gps_data_files.md)
+  : Find all compatible GPS data files in a directory structure
+- [`read_acc_data()`](https://ninanor.github.io/seatrack-gps/reference/read_acc_data.md)
+  : Get acceleration data from a file connection
+- [`read_pos_data()`](https://ninanor.github.io/seatrack-gps/reference/read_pos_data.md)
+  : Get position data from a specific tag file
+
